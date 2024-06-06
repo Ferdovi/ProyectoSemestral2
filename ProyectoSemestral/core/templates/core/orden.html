@@ -1,0 +1,109 @@
+
+{% load static %}
+
+{% block css %}
+<style>
+    .form-container {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-title {
+        color: #343a40;
+    }
+
+    .form-section-title {
+        color: #495057;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+
+    .main-container {
+        margin-top: 80px;
+        /* Ajuste el valor según el espacio deseado */
+    }
+
+    .table-container {
+        margin-top: 40px;
+    }
+
+    .table thead th {
+        background-color: #343a40;
+        color: #fff;
+    }
+
+    .table tfoot td {
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block contenido %}
+<div class="container main-container">
+    <div class="form-container">
+        <h1 class="form-title mb-4">Orden de Compra</h1>
+
+        <form method="post">
+            {% csrf_token %}
+            <table>
+                
+                {{ form }}
+
+                <!-- Agrega campos para mostrar el subtotal, el IVA y el total -->
+                <tr>
+                    <th>Subtotal:</th>
+                    <td>{{ x.precio_unitario }}</td>
+                </tr>
+                <tr>
+                    <th>IVA:</th>
+                    <td>{{ form.iva }}</td>
+                </tr>
+                <tr>
+                    <th>Total:</th>
+                    <td>{{ form.total }}</td>
+                </tr>
+                
+            </table>
+            
+            
+            
+
+
+            <button type="submit" class="btn btn-primary mt-3">Crear Orden</button>
+        </form>
+        <a href="{% url 'producto' %}" class="btn btn-secondary mt-3">Ir a la página de productos</a>
+
+
+        <div class="{{ message.tags }}"></div>
+    </div>
+</div>
+
+
+
+<script>
+    function calculateTotal(element) {
+        let row = element.parentElement.parentElement;
+        let cantidad = row.querySelector('input[name="cantidad"]').value;
+        let precio_unitario = row.querySelector('input[name="precio_unitario"]').value;
+        let valor_total = row.querySelector('input[name="valor_total"]');
+
+        let total = cantidad * precio_unitario;
+        valor_total.value = total.toFixed(2);
+
+        // Aquí calculamos el total general y el IVA
+        let totalGeneral = 0;
+        let inputsValorTotal = document.querySelectorAll('input[name="valor_total"]');
+        for (let input of inputsValorTotal) {
+            totalGeneral += Number(input.value);
+        }
+
+        let iva = totalGeneral * 0.19;
+        let totalConIva = totalGeneral * 1.19;
+
+        document.getElementById('iva').textContent = iva.toFixed(2);
+        document.getElementById('total').textContent = totalConIva.toFixed(2);
+    }
+</script>
+{% endblock %}
